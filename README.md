@@ -9,4 +9,6 @@
 ## [v0.1](https://github.com/ignassimkunas/blockchain/releases/tag/v0.1)
 - Sukurta pirminė blockchain versija
 
-# Blockchain
+## [v0.2](https://github.com/ignassimkunas/blockchain/releases/tag/v0.2)
+- Pridėtas transakcijų validavimas.
+- Pridėta nauja blokų mininimo strategija.
