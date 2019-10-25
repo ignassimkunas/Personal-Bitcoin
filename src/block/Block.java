@@ -13,9 +13,9 @@ public class Block {
 	private String version;
 	private String merkelRootHash;
 	private String nonce;
-	private static long difficultyTarget = 3;
+	private static long difficultyTarget = 4;
 	//data
-	private ArrayList<String> transactions;
+	private ArrayList<Transaction> transactions;
 	
 	public void setNonce(String nonce) {
 		this.nonce = nonce;
@@ -23,7 +23,7 @@ public class Block {
 	public String getNonce() {
 		return nonce;
 	}
-	public ArrayList<String> getTransactions(){
+	public ArrayList<Transaction> getTransactions(){
 		return transactions;
 	}
 	String fromBeginingToEnd(String input) {
@@ -89,7 +89,7 @@ public class Block {
 	public String getPrevHash() {
 		return prevHash;
 	}
-	Block(ArrayList<String> transactions, String prevHash){
+	Block(ArrayList<Transaction> transactions, String prevHash){
 		this.transactions = transactions;
 		this.prevHash = prevHash;
 		version = "1";

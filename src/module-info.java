@@ -1,2 +1,2 @@
-module Blockchain {
+module block {
 }
