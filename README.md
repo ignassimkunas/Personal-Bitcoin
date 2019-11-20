@@ -12,3 +12,7 @@
 ## [v0.2](https://github.com/ignassimkunas/blockchain/releases/tag/v0.2)
 - Pridėtas transakcijų validavimas.
 - Pridėta nauja blokų mininimo strategija.
+
+## [v0.3](https://github.com/ignassimkunas/blockchain/releases/tag/v0.3)
+- Pridėtas Merkle medžio hash skaičiavimas
+
