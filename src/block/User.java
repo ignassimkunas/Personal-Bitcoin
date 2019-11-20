@@ -8,7 +8,13 @@ public class User {
 	private String publicKey;
 	private int privateKey; 
 	private int shimCoin;
-	
+	User(){
+		this.name = "";
+		Random random = new Random();
+		privateKey = random.nextInt(1000000000);
+		publicKey = StringUtil.applySha256(Integer.toString(privateKey));
+		shimCoin = random.nextInt(999901) +  100;
+	}
 	User(String name){
 		this.name = StringUtil.applySha256(name);
 		Random random = new Random();

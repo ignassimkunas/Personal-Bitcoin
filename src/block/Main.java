@@ -6,10 +6,10 @@ public class Main {
 	
 	static ArrayList<Transaction> transactions;
 	static ArrayList<Block> blockChain;
-	public static Block mineBlock(Block newBlock, ArrayList<Transaction> transactionsForBlock, int tries) {
+	public static Block mineBlock(Block newBlock, int tries) {
 		long difficulty = blockChain.get(blockChain.size()-1).getDifficultyTarget();
 		String target = new String(new char[(int) difficulty]).replace('\0', '0');
-		String newestHash = newBlock.getHash();
+		String newestHash;
 		Random  random = new Random();
 		for (int i = 0; i < tries; i++) {
 			newBlock.setNonce(newBlock.getNonce()+1);
@@ -24,18 +24,19 @@ public class Main {
 		return null;
 	}
 	
-	public static void listBlockChain(ArrayList<Block> blockChain) {
+	private static void listBlockChain(ArrayList<Block> blockChain) {
 		int blockCount = 0;
 		for (Block block : blockChain) {
 			blockCount++;
-			System.out.println("Block number: " + Integer.toString(blockCount));
+			System.out.println("Block number: " + blockCount);
 			System.out.println("Previous block hash: " + block.getPrevHash());
 			System.out.println("Hash of block: "+ block.getHash());
-			System.out.println("Transaction number " + Integer.toString(block.getTransactions().size()) + "\n");
+			System.out.println("Merkle root: " + block.getMerkelRootHash() + "\n");
+			System.out.println("Transaction number " + block.getTransactions().size() + "\n");
 		}
 	}
 	//kol kas būtinai user1 perveda user2
-	public static Transaction makeTransaction(User user1, User user2) {
+	private static Transaction makeTransaction(User user1, User user2) {
 		Random rand = new Random();
 		int ammount = rand.nextInt(1000) + 1;
 		user1.setBalance(user1.getBalance() - ammount);
@@ -43,7 +44,7 @@ public class Main {
 		Transaction transaction = new Transaction(user1, user2, ammount, StringUtil.applySha256(user1.getName()+user2.getName() + ammount));
 		return transaction;
 	}
-	public static void generateTransactions(ArrayList<User> users) {
+	private static void generateTransactions(ArrayList<User> users) {
 		Random rand = new Random();
 		int index1, index2;
 		User user1, user2;
@@ -58,16 +59,11 @@ public class Main {
 			transactions.add(makeTransaction(user1, user2));
 		}
 	}
-	public static boolean validateTransaction(Transaction transaction) {
-		if (!transaction.getId().equals(StringUtil.applySha256(transaction.getFromUser().getName()+transaction.getToUser().getName() + transaction.getTransferAmount())) || transaction.getFromUser().getBalance() < 0){
-			return false;
-		}
-		else {
-			return true;
-		}
+	private static boolean validateTransaction(Transaction transaction) {
+		return transaction.getId().equals(StringUtil.applySha256(transaction.getFromUser().getName() + transaction.getToUser().getName() + transaction.getTransferAmount())) && transaction.getFromUser().getBalance() >= 0;
 		
 	}
-	public static ArrayList<Transaction> get100Transactions(){
+	private static ArrayList<Transaction> get100Transactions(){
 		Random rand = new Random();
 		ArrayList<Transaction> newTransactions = new ArrayList<Transaction>();
 		ArrayList<Integer> indices = new ArrayList<Integer>();
@@ -96,12 +92,12 @@ public class Main {
 		
 		return newTransactions;
 	}
-	public static void removeTransFromPool(Block block) {
-		ArrayList<Transaction> tempTrans = new ArrayList<Transaction>();
-		for (int i = 0; i < transactions.size(); i++) {
+	private static void removeTransFromPool(Block block) {
+		ArrayList<Transaction> tempTrans = new ArrayList<>();
+		for (Transaction transaction : transactions) {
 			for (int j = 0; j < block.getTransactions().size(); j++) {
-				if (transactions.get(i) == block.getTransactions().get(j)){
-					tempTrans.add(transactions.get(i));
+				if (transaction == block.getTransactions().get(j)) {
+					tempTrans.add(transaction);
 				}
 			}
 		}
@@ -109,33 +105,8 @@ public class Main {
 			transactions.remove(t);
 		}
 	}
-	public static void main(String[] args) {
-		transactions = new ArrayList<Transaction>();
-		blockChain = new ArrayList<Block>();
-		Block genesisBlock = new Block(transactions, "");
-		blockChain.add(genesisBlock);
-		//Generuoja userius
-		ArrayList<User> users = new ArrayList<User>();
-		String userName = "";
-		for (int i = 0; i < 1000; i++) {
-			userName = "John" + Integer.toString(i + 1);
-			User user = new User(userName);
-			users.add(user);
-		}
-		//Generuoja transakcijas
-		generateTransactions(users);
-		//Tikrinama ar yra netinkamų transakcijų
-		ArrayList<Integer> indices = new ArrayList<Integer>();
-		for (int i = 0; i < transactions.size(); i++) {
-			if (!validateTransaction(transactions.get(i))) {
-				indices.add(i);
-			}
-		}
-		for (int i : indices) {
-			transactions.remove(i);
-		}
-		//Nauji blokai kandidatai
-		ArrayList<Block> newBlocks = new ArrayList<Block>();
+	private static void startMining(){
+		ArrayList<Block> newBlocks = new ArrayList<>();
 		Block newBlock = null;
 		int tries = 100000, index;
 		Random rand = new Random();
@@ -146,7 +117,7 @@ public class Main {
 		while(transactions.size() > 0) {
 			while (!newBlocks.isEmpty()) {
 				newBlock = newBlocks.get(index);
-				newBlock = mineBlock(newBlock, newBlock.getTransactions(), tries);
+				newBlock = mineBlock(newBlock, tries);
 				if (newBlock == null) {
 					newBlocks.remove(index);
 					if (newBlocks.size() > 0) {
@@ -168,6 +139,34 @@ public class Main {
 				newBlocks.add(new Block(get100Transactions(), blockChain.get(blockChain.size() - 1).getHash()));
 			}
 		}
+	}
+	public static void main(String[] args) {
+		transactions = new ArrayList<>();
+		blockChain = new ArrayList<>();
+		Block genesisBlock = new Block(transactions, "");
+		blockChain.add(genesisBlock);
+		//Generuoja userius
+		ArrayList<User> users = new ArrayList<User>();
+		String userName = "";
+		for (int i = 0; i < 1000; i++) {
+			userName = "John" + i + 1;
+			User user = new User(userName);
+			users.add(user);
+		}
+		//Generuoja transakcijas
+		generateTransactions(users);
+		//Tikrinama ar yra netinkamų transakcijų
+		ArrayList<Integer> indices = new ArrayList<>();
+		for (int i = 0; i < transactions.size(); i++) {
+			if (!validateTransaction(transactions.get(i))) {
+				indices.add(i);
+			}
+		}
+		for (int i : indices) {
+			transactions.remove(i);
+		}
+		//Nauji blokai kandidatai
+		startMining();
 		listBlockChain(blockChain);
 		System.out.println(transactions.size());
 	}
