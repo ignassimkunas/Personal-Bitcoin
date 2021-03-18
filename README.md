@@ -2,17 +2,17 @@
 
 ## Personal Blockchain
 
-- Blockchain, kuriame sugeneruota 1000 vartotojų su atsitiktiniais shimCoin kiekiais, bei 10000 transakcijų tarp tų vartotojų.
+- Custom made Blockchain, which when run generates 1000 users with random numbers of shimCoins(custom currency) and 10000 transactions between the users.
 
 # Change log
 
 ## [v0.1](https://github.com/ignassimkunas/blockchain/releases/tag/v0.1)
-- Sukurta pirminė blockchain versija
+- Initial version.
 
 ## [v0.2](https://github.com/ignassimkunas/blockchain/releases/tag/v0.2)
-- Pridėtas transakcijų validavimas.
-- Pridėta nauja blokų mininimo strategija.
+- Add transaction validation
+- Updated block mining strategy.
 
 ## [v0.3](https://github.com/ignassimkunas/blockchain/releases/tag/v0.3)
-- Pridėtas Merkle medžio hash skaičiavimas
+- Add Merkle tree hash calculation.
 
